@@ -93,7 +93,8 @@ while running:
         ball_gravity -= 5
 
     if ball_mask.overlap(brick_mask, offset_ball_and_brick):
-        ball_gravity += 5
+        ball_gravity += 10
+        brick_pos = (400, -100)
 
     # Clear the screen (customize color)
     screen.fill((0, 0, 0))  # Black background
