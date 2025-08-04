@@ -36,6 +36,7 @@ brick_mask = pygame.mask.from_surface(scaled_brick)  # For collisions
 # jump_sound = pygame.mixer.Sound("path/to/jump.wav")
 
 # Set up variables:
+brick_pos = (400, 0)
 player_pos = (
     (screen_width // 2) - 80,
     (screen_height - 50),
@@ -75,6 +76,11 @@ while running:
     ball_pos = ((ball_pos[0] + ball_bounce), ball_pos[1] + ball_gravity)
     offset_player_and_ball = (player_pos[0] - ball_pos[0], player_pos[1] - ball_pos[1])
 
+    offset_ball_and_brick = (
+        ball_pos[0] - brick_pos[0],
+        ball_pos[1] - brick_pos[1],
+    )
+
     if ball_pos[1] < 0:
         ball_gravity += 5
 
@@ -86,13 +92,16 @@ while running:
     if ball_mask.overlap(player_mask, offset_player_and_ball):
         ball_gravity -= 5
 
+    if ball_mask.overlap(brick_mask, offset_ball_and_brick):
+        ball_gravity += 5
+
     # Clear the screen (customize color)
     screen.fill((0, 0, 0))  # Black background
 
     # Render game elements (blit images, draw shapes here)
     screen.blit(scaled_player, player_pos)
     screen.blit(scaled_ball, (ball_pos))
-    screen.blit(scaled_brick, (0, 0))
+    screen.blit(scaled_brick, (brick_pos))
 
     # Update the display
     pygame.display.flip()
