@@ -1,6 +1,6 @@
 import pygame
 import sys
-from classes import Player
+from classes import Brick
 
 # Initialize Pygame
 pygame.init()
@@ -25,11 +25,34 @@ ball_image = pygame.image.load("brick_breaker/assets/metal_ball.png").convert_al
 scaled_ball = pygame.transform.scale_by(ball_image, 2)  # Optional scaling
 ball_mask = pygame.mask.from_surface(scaled_ball)  # For collisions
 
-brick_image = pygame.image.load(
-    "brick_breaker/assets/full_metal_brick.png"
-).convert_alpha()
-scaled_brick = pygame.transform.scale_by(brick_image, 2)  # Optional scaling
-brick_mask = pygame.mask.from_surface(scaled_brick)  # For collisions
+background = pygame.image.load("brick_breaker/assets/Background 1.png").convert_alpha()
+background = pygame.transform.scale(background, (800, 600))
+
+bricks = [
+    Brick(20, 10),
+    Brick(120, 10),
+    Brick(220, 10),
+    Brick(320, 10),
+    Brick(420, 10),
+    Brick(520, 10),
+    Brick(620, 10),
+    Brick(720, 10),
+    Brick(70, 60),
+    Brick(170, 60),
+    Brick(270, 60),
+    Brick(370, 60),
+    Brick(470, 60),
+    Brick(570, 60),
+    Brick(670, 60),
+    Brick(20, 110),
+    Brick(120, 110),
+    Brick(220, 110),
+    Brick(320, 110),
+    Brick(420, 110),
+    Brick(520, 110),
+    Brick(620, 110),
+    Brick(720, 110),
+]
 
 
 # Example: Load sound:
@@ -76,13 +99,8 @@ while running:
     ball_pos = ((ball_pos[0] + ball_bounce), ball_pos[1] + ball_gravity)
     offset_player_and_ball = (player_pos[0] - ball_pos[0], player_pos[1] - ball_pos[1])
 
-    offset_ball_and_brick = (
-        ball_pos[0] - brick_pos[0],
-        ball_pos[1] - brick_pos[1],
-    )
-
     if ball_pos[1] < 0:
-        ball_gravity += 5
+        ball_gravity = 5
 
     if ball_pos[0] < 0:
         ball_bounce = 2
@@ -90,19 +108,30 @@ while running:
         ball_bounce = -2
 
     if ball_mask.overlap(player_mask, offset_player_and_ball):
-        ball_gravity -= 5
+        ball_gravity = -5
+        print("boom")
 
-    if ball_mask.overlap(brick_mask, offset_ball_and_brick):
-        ball_gravity += 10
-        brick_pos = (400, -100)
+    # In loop:
+    for brick in bricks[:]:
+        offset_ball_and_brick = (
+            ball_pos[0] - brick.pos[0],
+            ball_pos[1] - brick.pos[1],
+        )
+        if brick.active and brick.mask.overlap(ball_mask, offset_ball_and_brick):
+            brick.active = False
+            ball_gravity = 5
 
     # Clear the screen (customize color)
     screen.fill((0, 0, 0))  # Black background
 
     # Render game elements (blit images, draw shapes here)
+    screen.blit(background, (0, 0))
     screen.blit(scaled_player, player_pos)
     screen.blit(scaled_ball, (ball_pos))
-    screen.blit(scaled_brick, (brick_pos))
+
+    for brick in bricks:
+        if brick.active:
+            screen.blit(brick.scale, brick.pos)
 
     # Update the display
     pygame.display.flip()
